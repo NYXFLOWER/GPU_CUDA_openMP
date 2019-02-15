@@ -4,3 +4,9 @@
 *.ptx
 *.cubin
 *.fatbin
+
+lab/*/*/cmake-build-debug
+lab/*/*/CMakeLists.txt
+*.DS_Store
+*.idea
+*/*/*/.idea/vcs.xml
