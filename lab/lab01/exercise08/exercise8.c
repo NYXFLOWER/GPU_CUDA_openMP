@@ -12,7 +12,7 @@ int main(){
         fprintf(stderr, "No file here");
         exit(0);
     }
-    
+
     // read length of student's name and allocate memory to pointers
     for (int i = 0; i < NUM_STUDENTS; ++i) {
         stu = (student *) malloc(sizeof(student));
