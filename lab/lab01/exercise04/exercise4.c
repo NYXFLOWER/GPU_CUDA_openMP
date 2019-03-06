@@ -12,6 +12,9 @@ int readLine(char buffer[]);
 
 int main()
 {
+    int * hhh;
+    printf("%d\n", scanf("%d", hhh));
+
     float in_value, sum;
     char buffer [BUFFER_SIZE];
     char command [4];
