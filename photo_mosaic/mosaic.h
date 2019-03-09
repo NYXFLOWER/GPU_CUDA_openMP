@@ -16,12 +16,13 @@ typedef struct Img
     unsigned int color_value;
     unsigned int num_pixel;
 
-    unsigned char * r, * g, * b;
+    unsigned char * data;
 } Img;
 
 //TYPE ppm_type = PPM_BINARY;
 
 Img * read_ppm(const char * img_path);
+int write_ppm(Img * img_path);
 
 
 #endif /* PPM_H */
