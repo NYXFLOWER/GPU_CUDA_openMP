@@ -53,11 +53,11 @@ read_ppm(const char *img_path) {
 
     // get commend and other three features
     skip_comment(fp);
-    if (!fscanf(fp, "%d \n", &image->width)) error("fail to scan width");
+    if (!fscanf(fp, "%d\n", &image->width)) error("fail to scan width");
     skip_comment(fp);
-    if (!fscanf(fp, "%d \n", &image->height)) error("fail to scan height");
+    if (!fscanf(fp, "%d\n", &image->height)) error("fail to scan height");
     skip_comment(fp);
-    if (!fscanf(fp, "%d \n", &image->color_value)) error("fail to scan color range");
+    if (!fscanf(fp, "%d\n", &image->color_value)) error("fail to scan color range");
 
 
     image->num_pixel = image->width * image->height;
@@ -91,8 +91,19 @@ read_ppm(const char *img_path) {
     return image;
 }
 
-int
-write_ppm(Img * img_path) {
 
-    return 0;
+
+/* read either p3 or p6, success will return 1 */
+void
+write_ppm_binary(Img * image, char * file_name) {
+    FILE *fp = fopen(file_name, "w");
+    if (!fp) error("file cannot be created or opened");
+
+    // write header
+    fprintf(fp, "P6\n%d\n%d\n%d\n", image->width, image->height, image->color_value);
+
+    // write pixel data
+    unsigned int length = 3 * image->width * image->height;
+    if (fwrite((void *) image->data, 1, (size_t) length, fp) != length)
+        error("data cannot be written to file");
 }
