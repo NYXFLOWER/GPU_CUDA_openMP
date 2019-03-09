@@ -27,32 +27,13 @@ int main() {
     unsigned int cell_size = 4;     // 2 ** n
     execution_mode = CPU;
     TYPE ppm_type = PPM_BINARY;
-    char input[] = "/Users/nyxfer/Documents/GitHub/gpu/photo_mosaic/Sheffield16x16.ppm";
+//    char input[] = "/Users/nyxfer/Documents/GitHub/gpu/photo_mosaic/Sheffield16x16.ppm";
+    char input[] = "/Users/nyxfer/Documents/GitHub/gpu/photo_mosaic/SheffieldPlainText16x16.ppm";
     char output[] = "/Users/nyxfer/Documents/GitHub/gpu/photo_mosaic/Sheffield_out.ppm";
 
 	//TODO: read input image file (either binary or plain text PPM)
 
-    FILE * fp;
-    char buffer[100];
-//
-    if ((fp = fopen("/Users/nyxfer/Documents/GitHub/gpu/photo_mosaic/Sheffield16x16.ppm", "rb")) == NULL) {
-        fprintf(stderr, "File can not open");
-        return 1;
-    }
-    fgets(buffer, 20, fp);
-    fgets(buffer, 20, fp);
-    fgets(buffer, 20, fp);
-    fgets(buffer, 20, fp);
-    fgets(buffer, 100, fp);
-    for(int i = 0; i<100; i++)
-        printf("%hhu ", buffer[i]);
-
-
-
 	Img * image = read_ppm(input);
-	printf("\n\n%d \t %d \t %d \t %d \t", image->width, image->height, image->color_value, image->num_pixel);
-    for(int i = 0; i<image->num_pixel; i++)
-        printf("%hhu ", image->r[i]); // prints a series of bytes
 
 //	//TODO: execute the mosaic filter based on the mode
 //	switch (execution_mode){
