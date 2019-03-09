@@ -22,7 +22,7 @@ error(char *message) {
 /************************ PPM I/O Functions ****************************/
 /* check if this line is commend, skip all commend lines */
 static void
-skip_comment(FILE * fp) {
+skip_comment(FILE *fp) {
     int c = getc(fp);
     while (c == '#') {
         while (getc(fp) != '\n');
@@ -31,11 +31,11 @@ skip_comment(FILE * fp) {
     ungetc(c, fp);
 }
 
-/* print error message and exit */
+/* read either p3 or p6, the output pixel data is a list of unsigned char */
 Img *
-read_ppm(const char * img_path) {
+read_ppm(const char *img_path) {
     // open file
-    FILE * fp = fopen(img_path, "r");
+    FILE *fp = fopen(img_path, "r");
     if (!fp) error("Image file cannot be accessed");
 
     // alloc image
@@ -49,35 +49,50 @@ read_ppm(const char * img_path) {
 
     // get ppm type
     if (!fgets(buffer, BUFFER_SIZE, fp)) error("...");
-    TYPE ppm_type = buffer[1] == 6 ? PPM_BINARY : PPM_PLAIN_TEXT;
+    TYPE ppm_type = (buffer[1] == '6') ? PPM_BINARY :PPM_PLAIN_TEXT;
 
     // get commend and other three features
     skip_comment(fp);
-    if (!fscanf(fp, "%d", &image->width)) error("fail to scan width");
+    if (!fscanf(fp, "%d \n", &image->width)) error("fail to scan width");
     skip_comment(fp);
-    if (!fscanf(fp, "%d", &image->height)) error("fail to scan height");
+    if (!fscanf(fp, "%d \n", &image->height)) error("fail to scan height");
     skip_comment(fp);
-    if (!fscanf(fp, "%d", &image->color_value)) error("fail to scan color range");
+    if (!fscanf(fp, "%d \n", &image->color_value)) error("fail to scan color range");
 
-    // get pixel data
+
     image->num_pixel = image->width * image->height;
     length = 3 * image->num_pixel;
 
+    // get pixel data
     switch (ppm_type) {
         case (PPM_BINARY): {
-            image->r = (unsigned char *) malloc(image->num_pixel);
-            image->g = (unsigned char *) malloc(image->num_pixel);
-            image->b = (unsigned char *) malloc(image->num_pixel);
+            image->data = (unsigned char *) malloc(length);
+            if (!image->data) error("data cannot be allocated on memory");
 
-            for (int i = 0; i < image->num_pixel; i++) {
-                fscanf(fp, "%hhu", &image->r[i]);
-                fscanf(fp, "%hhu", &image->g[i]);
-                fscanf(fp, "%hhu", &image->b[i]);
+            if (fread((void *) image->data, 1, (size_t) length, fp) != length)
+                error("cannot read image data from file");
+//            printf("\n");
+//
+//            for(int i = 0; i<100; i++)
+//                printf("%hhu ", image->data[i]);
+        }
+        case (PPM_PLAIN_TEXT): {
+            int temp_int;
+            unsigned char * temp_data = image->data = (unsigned char *) malloc(length);
+            int data_index = 0;
+            while (fscanf(fp, "%d", &temp_int) == 1) {
+                temp_data[data_index++] = (unsigned char) temp_int;
+//                printf("%hhu \n", temp_data[data_index-1]);
             }
         }
     }
 
-
     fclose(fp);
     return image;
+}
+
+int
+write_ppm(Img * img_path) {
+
+    return 0;
 }
