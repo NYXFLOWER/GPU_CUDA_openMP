@@ -19,10 +19,9 @@ typedef struct Img
     unsigned char * data;
 } Img;
 
-//TYPE ppm_type = PPM_BINARY;
-
+void error(char *message);
 Img * read_ppm(const char * img_path);
-int write_ppm(Img * img_path);
+void write_ppm_binary(Img * img_path, char * file_name);
 
 
 #endif /* PPM_H */

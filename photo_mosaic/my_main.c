@@ -51,7 +51,7 @@ read_ppm(const char *img_path) {
     if (!fgets(buffer, BUFFER_SIZE, fp)) error("...");
     TYPE ppm_type = (buffer[1] == '6') ? PPM_BINARY :PPM_PLAIN_TEXT;
 
-    // get commend and other three features
+    // get comment and other three features
     skip_comment(fp);
     if (!fscanf(fp, "%d\n", &image->width)) error("fail to scan width");
     skip_comment(fp);
@@ -78,11 +78,12 @@ read_ppm(const char *img_path) {
         }
         case (PPM_PLAIN_TEXT): {
             int temp_int;
+            int i = 0;
             unsigned char * temp_data = image->data = (unsigned char *) malloc(length);
             int data_index = 0;
             while (fscanf(fp, "%d", &temp_int) == 1) {
                 temp_data[data_index++] = (unsigned char) temp_int;
-//                printf("%hhu \n", temp_data[data_index-1]);
+                printf("%hhu %d \n", temp_data[data_index-1], i++);
             }
         }
     }
