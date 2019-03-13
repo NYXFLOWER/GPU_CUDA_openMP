@@ -19,6 +19,8 @@ error(char *message) {
     exit(1);
 }
 
+/* give the index of data corresponding to the jth row of ith cell*/
+
 /************************ PPM I/O Functions ****************************/
 /* check if this line is commend, skip all commend lines */
 static void
@@ -76,16 +78,16 @@ read_ppm(const char *img_path) {
 //            for(int i = 0; i<100; i++)
 //                printf("%hhu ", image->data[i]);
         }
-        case (PPM_PLAIN_TEXT): {
-            int temp_int;
-            int i = 0;
-            unsigned char * temp_data = image->data = (unsigned char *) malloc(length);
-            int data_index = 0;
-            while (fscanf(fp, "%d", &temp_int) == 1) {
-                temp_data[data_index++] = (unsigned char) temp_int;
-                printf("%hhu %d \n", temp_data[data_index-1], i++);
-            }
-        }
+//        case (PPM_PLAIN_TEXT): {
+//            int temp_int;
+//            int i = 0;
+//            unsigned char * temp_data = image->data = (unsigned char *) malloc(length);
+//            int data_index = 0;
+//            while (fscanf(fp, "%d", &temp_int) == 1) {
+//                temp_data[data_index++] = (unsigned char) temp_int;
+//                printf("%hhu %d \n", temp_data[data_index-1], i++);
+//            }
+//        }
     }
 
     fclose(fp);
