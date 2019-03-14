@@ -6,19 +6,15 @@
 
 #IncludeRegexTransform: 
 
-/Users/nyxfer/Documents/GitHub/gpu/photo_mosaic/mosaic.h
-sys/types.h
--
-
-/Users/nyxfer/Documents/GitHub/gpu/photo_mosaic/my_main.c
-stdlib.h
--
+/Users/nyxfer/Documents/GitHub/gpu/photo_mosaic/mosaic.c
 stdio.h
 -
-ctype.h
--
-mach/boolean.h
+stdlib.h
 -
 mosaic.h
 /Users/nyxfer/Documents/GitHub/gpu/photo_mosaic/mosaic.h
+
+/Users/nyxfer/Documents/GitHub/gpu/photo_mosaic/mosaic.h
+sys/types.h
+-
 
