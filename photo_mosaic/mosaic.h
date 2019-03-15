@@ -7,7 +7,7 @@
 
 #include <sys/types.h>
 
-typedef enum PPM_TYPE { PPM_BINARY, PPM_PLAIN_TEXT } TYPE;
+typedef enum PPM_TYPE { PPM_BINARY, PPM_PLAIN_TEXT } PPM;
 
 typedef struct Img
 {

@@ -11,6 +11,10 @@ stdio.h
 -
 stdlib.h
 -
+time.h
+-
+omp.h
+-
 mosaic.h
 /Users/nyxfer/Documents/GitHub/gpu/photo_mosaic/mosaic.h
 

@@ -51,7 +51,7 @@ read_ppm(const char *img_path) {
 
     // get ppm type
     if (!fgets(buffer, BUFFER_SIZE, fp)) error("...");
-    TYPE ppm_type = (buffer[1] == '6') ? PPM_BINARY :PPM_PLAIN_TEXT;
+    PPM ppm_type = (buffer[1] == '6') ? PPM_BINARY :PPM_PLAIN_TEXT;
 
     // get comment and other three features
     skip_comment(fp);
@@ -77,17 +77,19 @@ read_ppm(const char *img_path) {
 //
 //            for(int i = 0; i<100; i++)
 //                printf("%hhu ", image->data[i]);
+            break;
         }
-//        case (PPM_PLAIN_TEXT): {
-//            int temp_int;
-//            int i = 0;
-//            unsigned char * temp_data = image->data = (unsigned char *) malloc(length);
-//            int data_index = 0;
-//            while (fscanf(fp, "%d", &temp_int) == 1) {
-//                temp_data[data_index++] = (unsigned char) temp_int;
-//                printf("%hhu %d \n", temp_data[data_index-1], i++);
-//            }
-//        }
+        case (PPM_PLAIN_TEXT): {
+            int temp_int;
+            int i = 0;
+            unsigned char * temp_data = image->data = (unsigned char *) malloc(length);
+            int data_index = 0;
+            while (fscanf(fp, "%d", &temp_int) == 1) {
+                temp_data[data_index++] = (unsigned char) temp_int;
+                printf("%hhu %d \n", temp_data[data_index-1], i++);
+            }
+            break;
+        }
     }
 
     fclose(fp);
