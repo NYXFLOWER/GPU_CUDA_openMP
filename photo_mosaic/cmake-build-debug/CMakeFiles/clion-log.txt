@@ -1,4 +1,6 @@
-/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /Users/nyxfer/Documents/GitHub/gpu/photo_mosaic
--- Configuring done
--- Generating done
--- Build files have been written to: /Users/nyxfer/Documents/GitHub/gpu/photo_mosaic/cmake-build-debug
+"E:\Program Files\JetBrains\CLion 2018.2.5\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - NMake Makefiles" G:\github\GPU_CUDA_openMP\photo_mosaic
+CMake Error at CMakeLists.txt:1 (cmake_minimum_required):
+  CMake 3.13 or higher is required.  You are running version 3.12.3
+
+
+-- Configuring incomplete, errors occurred!

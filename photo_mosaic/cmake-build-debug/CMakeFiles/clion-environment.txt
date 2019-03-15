@@ -1,3 +1,4 @@
-ToolSet: 1.0 (local)Options: 
+ToolSet: 15.0@E:\Program Files\VisualStudio
+Options: 
 
 Options:
