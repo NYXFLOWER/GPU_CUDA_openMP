@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+#include <omp.h>
 #include "mosaic.h"
 
 #define FAILURE 0
@@ -18,7 +20,7 @@ typedef struct MosaicCell {
 typedef enum MODE {
     CPU, OPENMP, CUDA, ALL
 } MODE;
-MODE execution_mode = CPU;
+MODE execution_mode = OPENMP;
 
 int main() {
 //========================================================
@@ -26,18 +28,37 @@ int main() {
 //		return 1;
 //========================================================
     // Sample Input Information
-    unsigned int cell_size = 2;     // 2 ** n
+    unsigned int cell_size = 64;     // 2 ** n
 //    execution_mode = CPU;
-    char input[] = "/Users/nyxfer/Documents/GitHub/gpu/photo_mosaic/Sheffield16x16.ppm";
+    char input[] = "/Users/nyxfer/Documents/GitHub/gpu/photo_mosaic/Dog2048x2048.ppm";
 //    char input[] = "/Users/nyxfer/Documents/GitHub/gpu/photo_mosaic/SheffieldPlainText16x16.ppm";
 //    char output[] = "/Users/nyxfer/Documents/GitHub/gpu/photo_mosaic/Sheffield_out.ppm";
-    TYPE write_type = PPM_BINARY;
+    PPM write_type = PPM_BINARY;
 
 //	TODO: read input image file (either binary or plain text PPM)
 
     Img *image = read_ppm(input);
 //	write_ppm_binary(image, "/Users/nyxfer/Documents/GitHub/gpu/photo_mosaic/hhh.ppm");
+    execution_mode = CPU;
 
+
+    // -------------------------- pro-process --------------------------------
+    // cell size
+    unsigned int cell_num_height = image->height / cell_size;
+    unsigned int cell_remain_height = image->height % cell_size;
+
+    unsigned int cell_num_weight = image->width / cell_size;
+    unsigned int cell_remain_weight = image->width % cell_size;
+
+    // temp r g b for each cell
+    unsigned int num_main_call = cell_num_height * cell_num_weight;
+    unsigned int num_in_cell = cell_size * cell_size;
+    unsigned char r, g, b;
+
+    // set pointer
+    unsigned int index = 0;     // the first index for each element start a row in cell
+    unsigned int r_sum = 0, g_sum = 0, b_sum = 0;
+    unsigned int r_average_sum = 0, g_average_sum = 0, b_average_sum = 0;
 
 // --------------------------------------------
 //    unsigned char d[5 * 7 * 3];
@@ -63,238 +84,277 @@ int main() {
 //    im.data = d;
 //    Img *image = &im;
     // --------------------------------------------
-
-
-//	//TODO: execute the mosaic filter based on the mode
-//	switch (execution_mode){
-//		case (CPU) : {
-//			//TODO: starting timing here
-//
-    //TODO: calculate the average colour value
-
     // data
     unsigned char *p_data = image->data;
+    // print data
+    //    for (int i = 0; i < image->height; i++) {
+//        for (int j = 0; j < image->width; ++j) {
+//            printf("%hhu, %hhu, %hhu\t\t", p_data[(i * 7 + j) * 3], p_data[(i * 7 + j) * 3 + 1], p_data[(i * 7 + j) * 3 + 2]);
+//        }
+//        printf("\n");
+//    }
 
-    for (int i = 0; i < image->height; i++) {
-        for (int j = 0; j < image->width; ++j) {
-            printf("%hhu, %hhu, %hhu\t\t", p_data[(i * 7 + j) * 3], p_data[(i * 7 + j) * 3 + 1], p_data[(i * 7 + j) * 3 + 2]);
-        }
-        printf("\n");
-    }
+    execution_mode = CPU;
+//	//TODO: execute the mosaic filter based on the mode
+    switch (execution_mode) {
+        case CPU : {
+            //starting timing here
+            clock_t timer = clock();
 
-    // cell size
-    unsigned int cell_num_height = image->height / cell_size;
-    unsigned int cell_remain_height = image->height % cell_size;
+            // process the main section
+            for (unsigned int i = 0; i < num_main_call; ++i) {      // the ith cell
+                // initial the sum of r, g, b
+                r_sum = 0;
+                g_sum = 0;
+                b_sum = 0;
 
-    unsigned int cell_num_weight = image->width / cell_size;
-    unsigned int cell_remain_weight = image->width % cell_size;
+                for (unsigned int j = 0; j < cell_size; ++j) {      // the jth row of ith cell
+                    // index in data that start the l row in ith cell
+                    index = ((i / cell_num_weight * cell_size + j) * image->width + (i % cell_num_weight) * cell_size) *
+                            3;
 
-    // temp r g b for each cell
-    unsigned int num_main_call = cell_num_height * cell_num_weight;
-    unsigned int num_in_cell = cell_size * cell_size;
-    unsigned char r, g, b;
+                    for (int k = 0; k < cell_size; ++k) {           // the kth element of jth row
+                        r_sum += p_data[index + k * 3];
+                        g_sum += p_data[index + k * 3 + 1];
+                        b_sum += p_data[index + k * 3 + 2];
+                    }
+                }
 
-    // set pointer
-    unsigned int index;     // the first index for each element start a row in cell
-    unsigned int r_sum, g_sum, b_sum;
+                // calculate the average
+                r = (unsigned char) (r_sum / num_in_cell);
+                g = (unsigned char) (g_sum / num_in_cell);
+                b = (unsigned char) (b_sum / num_in_cell);
 
-    // process the main section
-    for (unsigned int i = 0; i < num_main_call; ++i) {      // the ith cell
-        // initial the sum of r, g, b
-        r_sum = 0;
-        g_sum = 0;
-        b_sum = 0;
-
-        for (unsigned int j = 0; j < cell_size; ++j) {      // the jth row of ith cell
-            // index in data that start the l row in ith cell
-            index = ((i / cell_num_weight * cell_size + j) * image->width + (i % cell_num_weight) * cell_size) * 3;
-
-            for (int k = 0; k < cell_size; ++k) {           // the kth element of jth row
-                r_sum += p_data[index + k * 3];
-                g_sum += p_data[index + k * 3 + 1];
-                b_sum += p_data[index + k * 3 + 2];
-            }
-        }
-
-        // calculate the average
-        r = (unsigned char) (r_sum / num_in_cell);
-        g = (unsigned char) (g_sum / num_in_cell);
-        b = (unsigned char) (b_sum / num_in_cell);
+                // update average sum
+                r_average_sum += r;
+                g_average_sum += g;
+                b_average_sum += b;
 
 //        printf("\n%hhu, %hhu, %hhu\n", r, g, b);
 
-        // mosaic the original
-        for (unsigned int j = 0; j < cell_size; ++j) {      // the jth row of ith cell
-            // index in data that start the l row in ith cell
-            index = ((i / cell_num_weight * cell_size + j) * image->width + (i % cell_num_weight) * cell_size) * 3;
+                // mosaic the original
+                for (unsigned int j = 0; j < cell_size; ++j) {      // the jth row of ith cell
+                    // index in data that start the l row in ith cell
+                    index = ((i / cell_num_weight * cell_size + j) * image->width + (i % cell_num_weight) * cell_size) *
+                            3;
 
-            for (int k = 0; k < cell_size; ++k) {           // the kth element of jth row
-                p_data[index + k * 3] = r;
-                p_data[index + k * 3 + 1] = g;
-                p_data[index + k * 3 + 2] = b;
-            }
-        }
-
-
-
-//        count_line = i % cell_num_weight;
-//        if (i % cell_num_weight == 0) {
-//            count_line++;
-//        }
-//
-//        index_main = 3 * i;
-//        index_data = (i * cell_size + count_line * cell_remain_weight) * 3;
-//
-//        // calculate the sum of ith cell
-//        for (int j = 0; j < cell_size; ++j) {
-//            cell_index_row = index_data + 3 * image->width * j;
-//            for (int k = 0; k < cell_size; ++k) {
-//                r += p_data[cell_index_row++];
-//                g += p_data[cell_index_row++];
-//                b += p_data[cell_index_row];
-//            }
-//        }
-//
-//        // calculate the average of ith cell
-//        main_cell[index_main++] = (unsigned char) (r / cell_number);
-//        main_cell[index_main++] = (unsigned char) (g / cell_number);
-//        main_cell[index_main] = (unsigned char) (b / cell_number);
-//        printf("\n%hhu, %hhu, %hhu\n", main_cell[index_main - 2], main_cell[index_main - 1], main_cell[index_data]);
-    }
-
-    // edge case: column edge
-    if (cell_remain_weight != 0) {
-        for (int m = 0; m < cell_num_height; ++m) {
-            r_sum = 0;
-            g_sum = 0;
-            b_sum = 0;
-            for (int n = 0; n < cell_size; ++n) {
-                index = (m * image->width * cell_size + cell_num_weight * cell_size) * 3;
-                for (int l = 0; l < cell_remain_weight; ++l) {
-                    r_sum += p_data[index + l * 3];
-                    g_sum += p_data[index + l * 3 + 1];
-                    b_sum += p_data[index + l * 3 + 2];
+                    for (int k = 0; k < cell_size; ++k) {           // the kth element of jth row
+                        p_data[index + k * 3] = r;
+                        p_data[index + k * 3 + 1] = g;
+                        p_data[index + k * 3 + 2] = b;
+                    }
                 }
             }
-            // calculate the average
-            num_in_cell = cell_remain_weight * cell_size;
-            r = (unsigned char) (r_sum / num_in_cell);
-            g = (unsigned char) (g_sum / num_in_cell);
-            b = (unsigned char) (b_sum / num_in_cell);
 
-            for (int n = 0; n < cell_size; ++n) {
-                index = (m * image->width * (cell_size + n) + cell_num_weight * cell_size) * 3;
-                for (int q = 0; q < cell_remain_weight; ++q) {
-                    p_data[index + q * 3] = r;
-                    p_data[index + q * 3 + 1] = g;
-                    p_data[index + q * 3 + 2] = b;
+            // edge case: column edge
+            if (cell_remain_weight != 0) {
+                for (int m = 0; m < cell_num_height; ++m) {
+                    r_sum = 0;
+                    g_sum = 0;
+                    b_sum = 0;
+                    for (int n = 0; n < cell_size; ++n) {
+                        index = (m * image->width * cell_size + n * image->width + cell_num_weight * cell_size) * 3;
+                        for (int l = 0; l < cell_remain_weight; ++l) {
+                            r_sum += p_data[index + l * 3];
+                            g_sum += p_data[index + l * 3 + 1];
+                            b_sum += p_data[index + l * 3 + 2];
+                        }
+                    }
+                    // calculate the average
+                    num_in_cell = cell_remain_weight * cell_size;
+                    r = (unsigned char) (r_sum / num_in_cell);
+                    g = (unsigned char) (g_sum / num_in_cell);
+                    b = (unsigned char) (b_sum / num_in_cell);
+
+                    for (int n = 0; n < cell_size; ++n) {
+                        index = (m * image->width * cell_size + n * image->width + cell_num_weight * cell_size) * 3;
+                        for (int q = 0; q < cell_remain_weight; ++q) {
+                            p_data[index + q * 3] = r;
+                            p_data[index + q * 3 + 1] = g;
+                            p_data[index + q * 3 + 2] = b;
+                        }
+                    }
                 }
             }
-        }
-    }
 
 //     edge case: row edge
-    if (cell_remain_height != 0) {
-        for (int m = 0; m < cell_num_weight; ++m) {
-            r_sum = 0;
-            g_sum = 0;
-            b_sum = 0;
-            for (int p = 0; p < cell_remain_height; ++p) {
-                index = (image->width * (cell_num_height * cell_size + p) + m * cell_size) * 3;
-                for (int n = 0; n < cell_size; ++n) {
-                    r_sum += p_data[index + n * 3];
-                    g_sum += p_data[index + n * 3 + 1];
-                    b_sum += p_data[index + n * 3 + 2];
+            if (cell_remain_height != 0) {
+                for (int m = 0; m < cell_num_weight; ++m) {
+                    r_sum = 0;
+                    g_sum = 0;
+                    b_sum = 0;
+                    for (int p = 0; p < cell_remain_height; ++p) {
+                        index = (image->width * (cell_num_height * cell_size + p) + m * cell_size) * 3;
+                        for (int n = 0; n < cell_size; ++n) {
+                            r_sum += p_data[index + n * 3];
+                            g_sum += p_data[index + n * 3 + 1];
+                            b_sum += p_data[index + n * 3 + 2];
+                        }
+                    }
+
+                    // calculate the average
+                    num_in_cell = cell_size * cell_remain_height;
+                    r = (unsigned char) (r_sum / num_in_cell);
+                    g = (unsigned char) (g_sum / num_in_cell);
+                    b = (unsigned char) (b_sum / num_in_cell);
+
+                    for (int p = 0; p < cell_remain_height; ++p) {
+                        index = (image->width * (cell_num_height * cell_size + p) + m * cell_size) * 3;
+                        for (int n = 0; n < cell_size; ++n) {
+                            p_data[index + n * 3] = r;
+                            p_data[index + n * 3 + 1] = g;
+                            p_data[index + n * 3 + 2] = b;
+                        }
+                    }
+                }
+
+
+                r_sum = 0;
+                g_sum = 0;
+                b_sum = 0;
+                // spacial case of last mosaic cell
+                for (int i = 0; i < cell_remain_height; ++i) {
+                    index = ((cell_num_height * cell_size + i) * image->width + cell_num_weight * cell_size) * 3;
+                    for (int j = 0; j < cell_remain_weight; ++j) {
+                        r_sum += p_data[index + j * 3];
+                        g_sum += p_data[index + j * 3 + 1];
+                        b_sum += p_data[index + j * 3 + 2];
+                    }
+                }
+                // calculate the average
+                num_in_cell = cell_remain_height * cell_remain_weight;
+                r = (unsigned char) (r_sum / num_in_cell);
+                g = (unsigned char) (g_sum / num_in_cell);
+                b = (unsigned char) (b_sum / num_in_cell);
+
+                for (int i = 0; i < cell_remain_height; ++i) {
+                    index = ((cell_num_height * cell_size + i) * image->width + cell_num_weight * cell_size) * 3;
+                    for (int j = 0; j < cell_remain_weight; ++j) {
+                        p_data[index + j * 3] = r;
+                        p_data[index + j * 3 + 1] = g;
+                        p_data[index + j * 3 + 2] = b;
+                    }
                 }
             }
 
-            // calculate the average
-            num_in_cell = cell_size * cell_remain_height;
-            r = (unsigned char) (r_sum / num_in_cell);
-            g = (unsigned char) (g_sum / num_in_cell);
-            b = (unsigned char) (b_sum / num_in_cell);
-
-            for (int p = 0; p < cell_remain_height; ++p) {
-                index = (image->width * (cell_num_height * cell_size + p) + m * cell_size) * 3;
-                for (int n = 0; n < cell_size; ++n) {
-                    p_data[index + n * 3] = r;
-                    p_data[index + n * 3 + 1] = g;
-                    p_data[index + n * 3 + 2] = b;
-                }
-            }
-        }
-
-        r_sum = 0;
-        g_sum = 0;
-        b_sum = 0;
-        // spacial case of last mosaic cell
-        for (int i = 0; i < cell_remain_height; ++i) {
-            index = (cell_num_height * image->width + cell_num_weight * cell_size) * 3;
-            for (int j = 0; j < cell_remain_weight; ++j) {
-                r_sum += p_data[index + j * 3];
-                g_sum += p_data[index + j * 3 + 1];
-                b_sum += p_data[index + j * 3 + 2];
-            }
-            // calculate the average
-            num_in_cell = cell_remain_height * cell_remain_weight;
-            r = (unsigned char) (r_sum / num_in_cell);
-            g = (unsigned char) (g_sum / num_in_cell);
-            b = (unsigned char) (b_sum / num_in_cell);
-
-            for (int n = 0; n < cell_remain_weight; ++n) {
-                p_data[index + n * 3] = r;
-                p_data[index + n * 3 + 1] = g;
-                p_data[index + n * 3 + 2] = b;
-            }
-        }
-    }
-
-    printf("\n");
+//    printf("\n");
 //    for (int l = 0; l < 35*3; ++l) {
 //        printf("%hhu  ", p_data[l]);
 //    }
 
-    for (int i = 0; i < image->height; i++) {
-        for (int j = 0; j < image->width; ++j) {
-            printf("%hhu, %hhu, %hhu\t\t", p_data[(i * 7 + j) * 3], p_data[(i * 7 + j) * 3 + 1], p_data[(i * 7 + j) * 3 + 2]);
+//    for (int i = 0; i < image->height; i++) {
+//        for (int j = 0; j < image->width; ++j) {
+//            printf("%hhu, %hhu, %hhu\t\t", p_data[(i * 7 + j) * 3], p_data[(i * 7 + j) * 3 + 1], p_data[(i * 7 + j) * 3 + 2]);
+//        }
+//        printf("\n");
+//    }
+//
+//    printf("\n %d/t/t%d ", image->height, image->width);
+//
+//			// TODO: Output the average colour value for the image
+            int num_average = cell_num_height * cell_num_weight;
+            if (cell_remain_weight != 0) num_average += cell_num_height;
+            if (cell_remain_height != 0) num_average += cell_num_weight + 1;
+            printf("CPU Average image colour red = %d, green = %d, blue = %d \n",
+                   r_average_sum / num_average, g_average_sum / num_average, b_average_sum / num_average);
+//
+//			//end timing here
+            clock_t timer_end = clock();
+            printf("constant CLOCKS_PER_SEC is: %lf", (double) (timer_end - timer));
+            double cost = (double) (timer_end - timer) / CLOCKS_PER_SEC;
+            printf("constant CLOCKS_PER_SEC is: %d, time cost is: %lf secs", CLOCKS_PER_SEC, cost);
+
+//            printf("CPU mode execution time took ??? s and ???ms\n");
+            break;
         }
-        printf("\n");
+        case OPENMP : {
+            #pragma omp parallel
+            //TODO: starting timing here
+            double time_begin = omp_get_wtime();
+
+            #pragma omp for schedule(static, 1) private(r_sum, g_sum, b_sum) reduction(+:r_average_sum, +:g_average_sum, +:b_average)
+
+            for (unsigned int i = 0; i < num_main_call; ++i) {      // the ith cell
+                // initial the sum of r, g, b
+                r_sum = 0;
+                g_sum = 0;
+                b_sum = 0;
+
+                for (unsigned int j = 0; j < cell_size; ++j) {      // the jth row of ith cell
+                    // index in data that start the l row in ith cell
+                    index = ((i / cell_num_weight * cell_size + j) * image->width + (i % cell_num_weight) * cell_size) *
+                            3;
+
+                    for (int k = 0; k < cell_size; ++k) {           // the kth element of jth row
+                        r_sum += p_data[index + k * 3];
+                        g_sum += p_data[index + k * 3 + 1];
+                        b_sum += p_data[index + k * 3 + 2];
+                    }
+                }
+
+                // calculate the average
+                r = (unsigned char) (r_sum / num_in_cell);
+                g = (unsigned char) (g_sum / num_in_cell);
+                b = (unsigned char) (b_sum / num_in_cell);
+
+                // update average sum
+                r_average_sum += r;
+                g_average_sum += g;
+                b_average_sum += b;
+
+//        printf("\n%hhu, %hhu, %hhu\n", r, g, b);
+
+                // mosaic the original
+                for (unsigned int j = 0; j < cell_size; ++j) {      // the jth row of ith cell
+                    // index in data that start the l row in ith cell
+                    index = ((i / cell_num_weight * cell_size + j) * image->width + (i % cell_num_weight) * cell_size) *
+                            3;
+
+                    for (int k = 0; k < cell_size; ++k) {           // the kth element of jth row
+                        p_data[index + k * 3] = r;
+                        p_data[index + k * 3 + 1] = g;
+                        p_data[index + k * 3 + 2] = b;
+                    }
+                }
+            }
+
+            //TODO: calculate the average colour value
+            // process the main section
+
+
+//			// Output the average colour value for the image
+        int num_average = cell_num_height * cell_num_weight;
+        if (cell_remain_weight != 0) num_average += cell_num_height;
+        if (cell_remain_height != 0) num_average += cell_num_weight + 1;
+        printf("CPU Average image colour red = %d, green = %d, blue = %d \n",
+               r_average_sum / num_average, g_average_sum / num_average, b_average_sum / num_average);
+
+        //TODO: end timing here
+        double time_end = omp_get_wtime();
+        printf("constant CLOCKS_PER_SEC is: %lf\n", (double) (time_end - time_begin));
+        double cost = (double) (time_end - time_begin) / CLOCKS_PER_SEC;
+        printf("constant CLOCKS_PER_SEC is: %d, time cost is: %lf secs", CLOCKS_PER_SEC, cost);
+//            printf("OPENMP mode execution time took ??? s and ?? ?ms\n");
+        break;
     }
-//
-//			// Output the average colour value for the image
-//			printf("CPU Average image colour red = ???, green = ???, blue = ??? \n");
-//
-//			//TODO: end timing here
-//			printf("CPU mode execution time took ??? s and ???ms\n");
-//			break;
-//		}
-//		case (OPENMP) : {
-//			//TODO: starting timing here
-//
-//			//TODO: calculate the average colour value
-//
-//			// Output the average colour value for the image
-//			printf("OPENMP Average image colour red = ???, green = ???, blue = ??? \n");
-//
-//			//TODO: end timing here
-//			printf("OPENMP mode execution time took ??? s and ?? ?ms\n");
-//			break;
-//		}
-//		case (CUDA) : {
-//			printf("CUDA Implementation not required for assignment part 1\n");
-//			break;
-//		}
-//		case (ALL) : {
-//			//TODO
-//			break;
-//		}
-//	}
 
-    //save the output image file (from last executed mode)
-    image->data = p_data;
-    write_ppm_binary(image, "/Users/nyxfer/Documents/GitHub/gpu/photo_mosaic/hhh.ppm");
+    case (CUDA) : {
+        printf("CUDA Implementation not required for assignment part 1\n");
+        break;
+    }
 
-    return 0;
+    case (ALL) : {
+        //TODO
+        break;
+    }
+}
+
+
+//save the output image file (from last executed mode)
+image->data = p_data;
+write_ppm_binary(image, "/Users/nyxfer/Documents/GitHub/gpu/photo_mosaic/hhh.ppm");
+
+return 0;
 }
 //========================================================
 //void print_help(){
