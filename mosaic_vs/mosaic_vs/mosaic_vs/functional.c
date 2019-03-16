@@ -110,3 +110,6 @@ write_ppm_binary(Img * image, char * file_name) {
 	if (fwrite((void *)image->data, 1, (size_t)length, fp) != length)
 		error("data cannot be written to file");
 }
+
+/************************ Mosaic Function ****************************/
+

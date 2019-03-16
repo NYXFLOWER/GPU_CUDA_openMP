@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
-#include <mach/boolean.h>
 #include "mosaic.h"
 
 #define BUFFER_SIZE 100
@@ -45,7 +44,6 @@ read_ppm(const char *img_path) {
     if (!image) error("New image cannot be allocated on memory");
 
     // local variables
-    unsigned int width, height, color_range;
     unsigned int length;
     char buffer[BUFFER_SIZE];
 

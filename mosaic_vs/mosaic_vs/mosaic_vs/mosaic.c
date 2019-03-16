@@ -15,7 +15,7 @@
 //========================================================
 
 
-MODE execution_mode = CPU;
+MODE execution_mode = OPENMP;
 PPM write_type = PPM_BINARY;
 
 unsigned int r_average_sum = 0, g_average_sum = 0, b_average_sum = 0;
@@ -28,7 +28,7 @@ int main() {
 
 	unsigned int cell_size = 64;     // 2 ** n
 
-	char input[] = "G:\\github\\GPU_CUDA_openMP\\photo_mosaic\\Binary.ppm";
+	char input[] = "G:\\github\\GPU_CUDA_openMP\\photo_mosaic\\Dog2048x2048.ppm";
 	//    char input[] = "/Users/nyxfer/Documents/GitHub/gpu/photo_mosaic/SheffieldPlainText16x16.ppm";
 	//    char output[] = "/Users/nyxfer/Documents/GitHub/gpu/photo_mosaic/Sheffield_out.ppm";
 	
@@ -59,7 +59,6 @@ int main() {
 	unsigned int index = 0;     // the first index for each element start a row in cell
 	unsigned int r_sum = 0, g_sum = 0, b_sum = 0;
 
-	execution_mode = CPU;
 	//	//TODO: execute the mosaic filter based on the mode
 	switch (execution_mode) {
 	case CPU: {
@@ -95,9 +94,8 @@ int main() {
 			g_average_sum += g;
 			b_average_sum += b;
 
-			//        printf("\n%hhu, %hhu, %hhu\n", r, g, b);
 
-							// mosaic the original
+			// mosaic the original
 			for (unsigned int j = 0; j < cell_size; ++j) {      // the jth row of ith cell
 				// index in data that start the l row in ith cell
 				index = ((i / cell_num_weight * cell_size + j) * image->width + (i % cell_num_weight) * cell_size) *
@@ -219,11 +217,54 @@ int main() {
 		//TODO: starting timing here
 		double time_begin = omp_get_wtime();
 		// #pragma omp parallel for schedule(static, 1) private(r_sum, g_sum, b_sum) reduction(+:r_average_sum, +:g_average_sum, +:b_average_sum)
-
+		printf("Hello!");
 
 		//TODO: calculate the average colour value
 		// process the main section
+		// process the main section
+#pragma omp parallel for private(r_sum, g_sum, b_sum, index, r, g, b, r_average_sum, g_average_sum, b_average_sum) reduction(+:r_average_sum, +:g_average_sum, +:b_average_sum) schedule(dynamic, 1)
+		for (unsigned int i = 0; i < num_main_call; ++i) {      // the ith cell
+			// initial the sum of r, g, b
+			r_sum = 0;
+			g_sum = 0;
+			b_sum = 0;
 
+			for (unsigned int j = 0; j < cell_size; ++j) {      // the jth row of ith cell
+				// index in data that start the l row in ith cell
+				index = ((i / cell_num_weight * cell_size + j) * image->width + (i % cell_num_weight) * cell_size) *
+					3;
+
+				for (unsigned int k = 0; k < cell_size; ++k) {           // the kth element of jth row
+					r_sum += image->data[index + k * 3];
+					g_sum += image->data[index + k * 3 + 1];
+					b_sum += image->data[index + k * 3 + 2];
+				}
+			}
+
+			// calculate the average
+			r = (unsigned char)(r_sum / num_in_cell);
+			g = (unsigned char)(g_sum / num_in_cell);
+			b = (unsigned char)(b_sum / num_in_cell);
+
+			// update average sum
+			r_average_sum += r;
+			g_average_sum += g;
+			b_average_sum += b;
+
+
+			// mosaic the original
+			for (unsigned int j = 0; j < cell_size; ++j) {      // the jth row of ith cell
+				// index in data that start the l row in ith cell
+				index = ((i / cell_num_weight * cell_size + j) * image->width + (i % cell_num_weight) * cell_size) *
+					3;
+
+				for (unsigned int k = 0; k < cell_size; ++k) {           // the kth element of jth row
+					image->data[index + k * 3] = r;
+					image->data[index + k * 3 + 1] = g;
+					image->data[index + k * 3 + 2] = b;
+				}
+			}
+		}
 
 //			// Output the average colour value for the image
 		int num_average = cell_num_height * cell_num_weight;
@@ -235,8 +276,6 @@ int main() {
 		//TODO: end timing here
 		double time_end = omp_get_wtime();
 		printf("constant CLOCKS_PER_SEC is: %lf\n", (double)(time_end - time_begin));
-		double cost = (double)(time_end - time_begin) / CLOCKS_PER_SEC;
-		printf("constant CLOCKS_PER_SEC is: %d, time cost is: %lf secs", CLOCKS_PER_SEC, cost);
 		//            printf("OPENMP mode execution time took ??? s and ?? ?ms\n");
 		break;
 	}
@@ -247,7 +286,7 @@ int main() {
 	}
 
 	case (ALL): {
-		//TODO
+		//TODOhttps://www.jetbrains.com/help/pycharm/configuring-remote-interpreters-via-ssh.html
 		break;
 	}
 	}
@@ -259,7 +298,7 @@ int main() {
 	return 0;
 }
 //========================================================
-//void print_help(){
+//void print_help() {
 //	printf("mosaic_%s C M -i input_file -o output_file [options]\n", USER_NAME);
 //
 //	printf("where:\n");

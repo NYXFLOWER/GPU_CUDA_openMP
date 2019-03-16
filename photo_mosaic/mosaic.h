@@ -1,7 +1,6 @@
 //
 // Created by Hao Xu on 2019-03-07.
 //
-
 #ifndef PPM_H
 #define PPM_H
 
