@@ -153,8 +153,7 @@ run(Img * image, Mosaic * mos, Process ppp) {
 	int * total = (int) malloc(3);
 	total[0] = 0; total[1] = 0; total[2] = 0;
 
-	/****** starting timing ******/
-	clock_t timer = clock();
+	
 
 	/****** process main mosaic section ******/
 	limits[0] = mos->cell_main_num;
@@ -201,9 +200,7 @@ run(Img * image, Mosaic * mos, Process ppp) {
 	printf("CPU Average image colour red = %d, green = %d, blue = %d \n",
 		total[0] / mos->cell_num, total[1] / mos->cell_num, total[2] / mos->cell_num);
 
-	//end timing here
-	double cost = (double)(clock() - timer) / CLOCKS_PER_SEC;
-	printf("CPU mode execution time took %d s and %dms\n", (int) cost, (int)((cost - (int)cost)*1000));
+	
 }
 
 void 

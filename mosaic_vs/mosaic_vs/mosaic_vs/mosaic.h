@@ -16,7 +16,7 @@ typedef enum PPM_TYPE {
 } PPM;
 
 typedef enum MODE {
-	CPU, OPENMP, CUDA, ALL
+	CPU, OPENMP, ALL
 } MODE;
 
 typedef struct Img {
@@ -45,5 +45,6 @@ Mosaic * compute_mosaic_info(unsigned int cell_size, Img * image);
 void run(Img * image, Mosaic * mos, Process ppp);
 
 void process_mosaic_section_cpu(Img * image, Mosaic * mos, int limits[3], Func fff, int pixcel_num, int * total);
+void process_mosaic_section_openmp(Img * image, Mosaic * mos, int limits[3], Func fff, int pixcel_num, int * total);
 
 #endif /* PPM_H */
