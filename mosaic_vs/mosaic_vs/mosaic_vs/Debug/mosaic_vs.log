@@ -1,2 +1,3 @@
 ﻿  mosaic.c
+g:\github\gpu_cuda_openmp\mosaic_vs\mosaic_vs\mosaic_vs\mosaic.c(45): warning C4013: 'omp_get_wtime' undefined; assuming extern returning int
   mosaic_vs.vcxproj -> G:\github\GPU_CUDA_openMP\mosaic_vs\mosaic_vs\Debug\mosaic_vs.exe

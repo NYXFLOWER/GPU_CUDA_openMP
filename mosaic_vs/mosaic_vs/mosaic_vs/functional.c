@@ -2,9 +2,8 @@
 // Created by Hao Xu on 2019-03-07.
 //
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <ctype.h>
+#include <omp.h>
 #include "mosaic.h"
 
 #define BUFFER_SIZE 100
@@ -15,7 +14,10 @@ int index_column_edge(int cell, int row, Img * image, Mosaic * mos);
 
 int index_row_edge(int cell, int row, Img * image, Mosaic * mos);
 
-void process_mosaic_section(Img * image, Mosaic * mos, int limits[3], func fff, int pixcel_num, int * total);
+int index_end_case(int cell, int row, Img * image, Mosaic * mos);
+
+void process_mosaic_section_cpu(Img * image, Mosaic * mos, int limits[3], Func fff, int pixcel_num, int * total);
+void process_mosaic_section_openmp(Img * image, Mosaic * mos, int limits[3], Func fff, int pixcel_num, int * total);
 
 /************************ Various Utility Functions ****************************/
 
@@ -144,7 +146,7 @@ compute_mosaic_info(unsigned int cell_size, Img * image) {
 }
 
 void
-run_cpu(Img * image, Mosaic * mos) {
+run(Img * image, Mosaic * mos, Process ppp) {
 	/****** variables declaraction ******/
 	unsigned int * limits = (unsigned int) malloc(3);
 	int pixcel_num;
@@ -160,7 +162,7 @@ run_cpu(Img * image, Mosaic * mos) {
 	limits[2] = mos->cell_size;
 
 	pixcel_num = mos->cell_size * mos->cell_size;
-	process_mosaic_section(image, mos, limits, index_main, pixcel_num, total);
+	ppp(image, mos, limits, index_main, pixcel_num, total);
 
 	/****** process column-edge mosaic section ******/
 	if (mos->cell_remain_weight != 0)
@@ -171,7 +173,7 @@ run_cpu(Img * image, Mosaic * mos) {
 
 		pixcel_num = mos->cell_size * mos->cell_remain_weight;
 
-		process_mosaic_section(image, mos, limits, &index_column_edge, pixcel_num, total);
+		ppp(image, mos, limits, &index_column_edge, pixcel_num, total);
 	}
 
 	/****** process row-edge mosaic section ******/
@@ -182,37 +184,17 @@ run_cpu(Img * image, Mosaic * mos) {
 		limits[2] = mos->cell_size;
 
 		pixcel_num = mos->cell_size * mos->cell_remain_height;
-		process_mosaic_section(image, mos, limits, &index_row_edge, pixcel_num, total);
+		ppp(image, mos, limits, &index_row_edge, pixcel_num, total);
 
 		/****** process end-corner mosaic section ******/
-		unsigned char r, g, b;
-		int r_sum = 0, g_sum = 0, b_sum = 0;
-		int index;
+		limits[0] = 1;
+		limits[1] = mos->cell_remain_height;
+		limits[2] = mos->cell_remain_weight;
 
-		for (unsigned int i = 0; i < mos->cell_remain_height; ++i) {
-			index = ((mos->cell_num_height * mos->cell_size + i) * image->width + mos->cell_num_weight * mos->cell_size) * 3;
-			for (unsigned int j = 0; j < mos->cell_remain_weight; ++j) {
-				r_sum += image->data[index + j * 3];
-				g_sum += image->data[index + j * 3 + 1];
-				b_sum += image->data[index + j * 3 + 2];
-			}
-		}
-		// calculate the average
 		pixcel_num = mos->cell_remain_height * mos->cell_remain_weight;
-		r = (unsigned char)(r_sum / pixcel_num);
-		g = (unsigned char)(g_sum / pixcel_num);
-		b = (unsigned char)(b_sum / pixcel_num);
 
-		total[0] += r; total[1] += g; total[2] += b;
+		ppp(image, mos, limits, &index_end_case, pixcel_num, total);
 
-		for (unsigned int i = 0; i < mos->cell_remain_height; ++i) {
-			index = ((mos->cell_num_height * mos->cell_size + i) * image->width + mos->cell_num_weight * mos->cell_size) * 3;
-			for (unsigned int j = 0; j < mos->cell_remain_weight; ++j) {
-				image->data[index + j * 3] = r;
-				image->data[index + j * 3 + 1] = g;
-				image->data[index + j * 3 + 2] = b;
-			}
-		}
 	}
 
 	// Output the average colour value for the image
@@ -224,8 +206,8 @@ run_cpu(Img * image, Mosaic * mos) {
 	printf("CPU mode execution time took %d s and %dms\n", (int) cost, (int)((cost - (int)cost)*1000));
 }
 
-void
-process_mosaic_section(Img * image, Mosaic * mos, int limits[3], func fff, int pixcel_num, int * total) {
+void 
+process_mosaic_section_cpu(Img * image, Mosaic * mos, int limits[3], Func fff, int pixcel_num, int * total) {
 	/** limits[0]: the number of mosaic in this mosaic section 
 		limits[1]: the number of pixcel rows in the current mosaic
 		limits[2]: the number of pixcel columns in the current mosaic*/
@@ -274,9 +256,54 @@ process_mosaic_section(Img * image, Mosaic * mos, int limits[3], func fff, int p
 }
 
 void
-process_mosaic_cell(Img * image, Mosaic * mos, int limits[3], func fff, int cell) {
-	
+process_mosaic_section_openmp(Img * image, Mosaic * mos, int limits[3], Func fff, int pixcel_num, int * total) {
+	/** limits[0]: the number of mosaic in this mosaic section
+		limits[1]: the number of pixcel rows in the current mosaic
+		limits[2]: the number of pixcel columns in the current mosaic*/
+
+	for (int i = 0; i < limits[0]; i++)	// the ith cell
+	{
+		/****** variables declaraction ******/
+		unsigned char r, g, b;
+		int r_sum = 0, g_sum = 0, b_sum = 0;
+		int index;
+
+		for (int j = 0; j < limits[1]; j++)	// the jth row of ith cell
+		{
+			// get the index in photo data that strar the jth row of the ith cell
+			index = fff(i, j, image, mos);
+
+			for (int k = 0; k < limits[2]; k++)	// the kth element of jth row
+			{
+				r_sum += (int)image->data[index + k * 3];
+				g_sum += (int)image->data[index + k * 3 + 1];
+				b_sum += (int)image->data[index + k * 3 + 2];
+			}
+		}
+
+		// calculate the average
+		r = (unsigned char)(r_sum / pixcel_num);
+		g = (unsigned char)(g_sum / pixcel_num);
+		b = (unsigned char)(b_sum / pixcel_num);
+
+		// add to total
+		total[0] += r; total[1] += g; total[2] += b;
+
+		// mosaic the original
+		for (int j = 0; j < limits[1]; ++j) {      // the jth row of ith cell
+			// index in data that start the l row in ith cell
+			index = index = fff(i, j, image, mos);
+
+			for (int k = 0; k < limits[2]; ++k) {       // the kth element of jth row
+				image->data[index + k * 3] = r;
+				image->data[index + k * 3 + 1] = g;
+				image->data[index + k * 3 + 2] = b;
+			}
+		}
+
+	}
 }
+
 
 int
 index_main(int cell, int row, Img * image, Mosaic* mos) {
@@ -291,4 +318,9 @@ index_column_edge(int cell, int row, Img * image, Mosaic * mos) {
 int
 index_row_edge(int cell, int row, Img * image, Mosaic * mos) {
 	return (image->width * (mos->cell_num_height * mos->cell_size + row) + cell * mos->cell_size) * 3;
+}
+
+int
+index_end_case(int cell, int row, Img * image, Mosaic * mos) {
+	return ((mos->cell_num_height * mos->cell_size + row) * image->width + mos->cell_num_weight * mos->cell_size) * 3;
 }

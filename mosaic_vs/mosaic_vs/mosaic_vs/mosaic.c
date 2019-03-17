@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <omp.h>
 #include "mosaic.h"
 
 #define FAILURE 0
@@ -24,7 +20,7 @@ int main() {
 	//		return 1;
 	//========================================================
 
-	unsigned int cell_size = 32;     // 2 ** n
+	unsigned int cell_size = 4;     // 2 ** n
 
 	char input[] = "G:\\github\\GPU_CUDA_openMP\\photo_mosaic\\Dog2048x2048.ppm";
 	//    char input[] = "/Users/nyxfer/Documents/GitHub/gpu/photo_mosaic/SheffieldPlainText16x16.ppm";
@@ -40,11 +36,20 @@ int main() {
 	// ------------- execute the mosaic filter based on the mode -------------
 	switch (execution_mode) {
 	case CPU: {
-		run_cpu(image, mos);
+		run(image, mos, &process_mosaic_section_cpu);
 
 		break;
 	}
 	case OPENMP: {
+		/****** starting timing ******/
+		double time_begin = omp_get_wtime();
+
+
+
+		//end timing here
+		double time_end = omp_get_wtime();
+		double cost = (double)(time_end - time_begin) / CLOCKS_PER_SEC;
+		printf("CPU mode execution time took %d s and %dms\n", (int)cost, (int)((cost - (int)cost) * 1000));
 		
 		break;
 	}
