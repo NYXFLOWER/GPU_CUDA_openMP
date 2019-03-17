@@ -25,6 +25,9 @@
   <ItemGroup>
     <ClInclude Include="mosaic.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\photo_mosaic\SheffieldPlainText16x16.ppm" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{B08802AA-323E-4EDD-A376-7645CC18CFF3}</ProjectGuid>
@@ -99,6 +102,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
