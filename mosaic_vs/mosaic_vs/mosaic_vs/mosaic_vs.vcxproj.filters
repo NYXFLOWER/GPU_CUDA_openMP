@@ -27,9 +27,4 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\photo_mosaic\SheffieldPlainText16x16.ppm">
-      <Filter>Resource Files</Filter>
-    </None>
-  </ItemGroup>
 </Project>

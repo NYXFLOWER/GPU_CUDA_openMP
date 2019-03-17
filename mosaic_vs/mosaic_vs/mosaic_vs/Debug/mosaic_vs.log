@@ -1,3 +1,8 @@
-﻿  mosaic.c
-g:\github\gpu_cuda_openmp\mosaic_vs\mosaic_vs\mosaic_vs\mosaic.c(45): warning C4013: 'omp_get_wtime' undefined; assuming extern returning int
+﻿  functional.c
+g:\github\gpu_cuda_openmp\mosaic_vs\mosaic_vs\mosaic_vs\functional.c(187): warning C4047: 'initializing': 'unsigned int *' differs in levels of indirection from 'unsigned int'
+g:\github\gpu_cuda_openmp\mosaic_vs\mosaic_vs\mosaic_vs\functional.c(189): warning C4047: 'initializing': 'int *' differs in levels of indirection from 'int'
+  mosaic.c
+g:\github\gpu_cuda_openmp\mosaic_vs\mosaic_vs\mosaic_vs\mosaic.c(48): warning C4013: 'omp_get_wtime' undefined; assuming extern returning int
+g:\github\gpu_cuda_openmp\mosaic_vs\mosaic_vs\mosaic_vs\mosaic.c(125): warning C4013: 'strcmp' undefined; assuming extern returning int
+  Generating Code...
   mosaic_vs.vcxproj -> G:\github\GPU_CUDA_openMP\mosaic_vs\mosaic_vs\Debug\mosaic_vs.exe

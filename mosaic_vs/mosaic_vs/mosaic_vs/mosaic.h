@@ -38,7 +38,10 @@ typedef struct Mosaic {
 typedef int(*Func)(int, int, Img *, Mosaic*);
 typedef void(*Process)(Img *, Mosaic *, int *, Func, int, int *);
 
+
 void error(char *message);
+int is_exp_of_two(unsigned int x);
+
 Img * read_ppm(const char * img_path);
 void write_ppm_binary(Img * img_path, char * file_name);
 Mosaic * compute_mosaic_info(unsigned int cell_size, Img * image);

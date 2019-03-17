@@ -28,6 +28,20 @@ error(char *message) {
 	exit(1);
 }
 
+/** check if 2 ** n */
+int
+is_exp_of_two(unsigned int x) {
+	unsigned int t = 1;
+	while (1)
+	{
+		if (t == x) return 1;
+		
+		if (t > x) return 0;
+		
+		t = t * 2;
+	}
+}
+
 /* give the index of data corresponding to the jth row of ith cell*/
 
 /************************ PPM I/O Functions ****************************/
@@ -104,9 +118,6 @@ read_ppm(const char *img_path) {
 	return image;
 }
 
-
-
-/* read either p3 or p6, success will return 1 */
 void
 write_ppm_binary(Img * image, char * file_name) {
 	FILE *fp = fopen(file_name, "wb");
@@ -119,6 +130,31 @@ write_ppm_binary(Img * image, char * file_name) {
 	unsigned int length = 3 * image->width * image->height;
 	if (fwrite((void *)image->data, 1, (size_t)length, fp) != length)
 		error("data cannot be written to file");
+}
+
+void write_ppm_text(Img * image, char * file_name) {
+	FILE *fp = fopen(file_name, "w");
+
+	//  write header
+	fprintf(fp, "P3\n%d\n%d\n%d\n", image->width, image->height, image->color_value);
+
+	// format all data into string and write it into file 
+	unsigned char * temp = image->data;
+	for (unsigned int i = 1; i < image->height; i++)
+	{
+		for (unsigned int j = 1; j < image->width; j++)
+		{
+			fprintf(fp, "%d %d %d\t", (int)temp++, (int)temp++, (int)temp++);
+		}
+		fprintf(fp, "%d %d %d\n", (int)temp++, (int)temp++, (int)temp++);
+	}
+	fprintf(fp, "%d %d %d", (int)temp++, (int)temp++, (int)temp);
+
+	// free image and data
+	free(image->data);
+	free(image);
+
+	fclose(fp);
 }
 
 /************************ Mosaic Function ****************************/

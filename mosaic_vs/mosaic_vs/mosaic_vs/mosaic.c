@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
 		run(image, mos, &process_mosaic_section_openmp);
 
 		double time_end = omp_get_wtime();
-		double cost = (double)(time_end - time_begin) / CLOCKS_PER_SEC;
+		cost = (double)(time_end - time_begin) / CLOCKS_PER_SEC;
 		printf("CPU mode execution time took %d s and %dms\n", (int)cost, (int)((cost - (int)cost) * 1000));
 
 		
@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
 
 
 	//save the output image file (from last executed mode)
-	write_ppm_binary(image, "G:\\github\\GPU_CUDA_openMP\\photo_mosaic\\hhhhh\\h.ppm");
+	write_ppm_binary(image, out_file);
 
 	return 0;
 }
@@ -116,7 +116,10 @@ int process_command_line(int argc, char *argv[]) {
 
 	//read in the non optional command line arguments
 	cell_size = (unsigned int)atoi(argv[1]);
-	cell_size = pow(2.0, (double)(int)log2(cell_size)); // change the value of c to be valid
+	if (!is_exp_of_two(cell_size)) {
+		error("mosaic size should be exp of 2");
+		print_help();
+	}
 
 
 	if (!strcmp(argv[2], "CPU")) { execution_mode = CPU; };
