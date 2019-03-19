@@ -21,6 +21,12 @@
     <ClCompile Include="functional.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cpu_versions.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="openmp_versions.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mosaic.h">

@@ -1,3 +1,6 @@
+//
+// Created by Hao Xu on 2019-03-07.
+//
 #include "mosaic.h"
 
 #define FAILURE 0
@@ -15,6 +18,7 @@ MODE execution_mode = CPU;
 PPM write_type = PPM_BINARY;
 char * in_file;
 char * out_file;
+char out_name[15];
 int cell_size = 8;
 
 int main(int argc, char *argv[]) {
@@ -37,22 +41,33 @@ int main(int argc, char *argv[]) {
 		clock_t timer = clock();
 
 		run(image, mos, &process_mosaic_section_cpu);
+		//run(image, mos, &process_mosaic_section_cpu2);
 
 		//end timing here
 		double cost = (double)(clock() - timer) / CLOCKS_PER_SEC;
 		printf("CPU mode execution time took %d s and %dms\n", (int)cost, (int)((cost - (int)cost) * 1000));
+		
+		//save the output image file (from last executed mode)
+		sprintf(out_name, "CPU_%s", out_file);
+		write_ppm_binary(image, out_name);
+
 		break;
 	}
 	case OPENMP: {
 		/****** starting timing ******/
 		double time_begin = omp_get_wtime();
 
-		run(image, mos, &process_mosaic_section_openmp);
+		//run(image, mos, &process_mosaic_section_openmp);
+		run(image, mos, &process_mosaic_section_openmp2);
 
 		//end timing here
 		double time_end = omp_get_wtime();
 		double cost = (double)(time_end - time_begin) / CLOCKS_PER_SEC;
-		printf("CPU mode execution time took %d s and %dms\n", (int)cost, (int)((cost - (int)cost) * 1000));
+		printf("OPENMP mode execution time took %d s and %.2fms\n", (int)cost, (cost - (int)cost) * 1000);
+		
+		//save the output image file (from last executed mode)
+		sprintf(out_name, "OPENMP_%s", out_file);
+		write_ppm_binary(image, out_name);
 
 		break;
 	}
@@ -61,28 +76,38 @@ int main(int argc, char *argv[]) {
 		/****** CPU ******/
 		clock_t timer = clock();
 
+		
 		run(image, mos, &process_mosaic_section_cpu);
+		//run(image, mos, &process_mosaic_section_cpu2);
 
 		double cost = (double)(clock() - timer) / CLOCKS_PER_SEC;
 		printf("CPU mode execution time took %d s and %dms\n", (int)cost, (int)((cost - (int)cost) * 1000));
 
+		//save the output image file (from last executed mode)
+		sprintf(out_name, "CPU_%s", out_file);
+		write_ppm_binary(image, out_name);
+
 		/****** OPENMP ******/
 		double time_begin = omp_get_wtime();
 
-		run(image, mos, &process_mosaic_section_openmp);
+		//run(image, mos, &process_mosaic_section_openmp);
+		run(image, mos, &process_mosaic_section_openmp2);
 
 		double time_end = omp_get_wtime();
 		cost = (double)(time_end - time_begin) / CLOCKS_PER_SEC;
-		printf("CPU mode execution time took %d s and %dms\n", (int)cost, (int)((cost - (int)cost) * 1000));
+		printf("OPENMP mode execution time took %d s and %.4fms\n", (int)cost, (cost - (int)cost) * 1000);
 
+		//save the output image file (from last executed mode)
+		sprintf(out_name, "OPENMP_%s", out_file);
+		write_ppm_binary(image, out_name);
 		
 		break;
 	}
 	}
 
-
-	//save the output image file (from last executed mode)
-	write_ppm_binary(image, out_file);
+	// free image and data
+	free(image->data);
+	free(image);
 
 	return 0;
 }

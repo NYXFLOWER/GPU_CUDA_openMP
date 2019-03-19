@@ -19,8 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="cpu_versions.c" />
     <ClCompile Include="functional.c" />
     <ClCompile Include="mosaic.c" />
+    <ClCompile Include="openmp_versions.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mosaic.h" />
