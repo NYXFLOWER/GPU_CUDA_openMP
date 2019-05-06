@@ -1,0 +1,72 @@
+﻿  
+  U:\mosaic_vs\mosaic_acq18hx_cuda10\mosaic_acq18hx_cuda10>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\bin\nvcc.exe" -ccbin "C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\VC\Tools\MSVC\14.13.26128\bin\HostX86\x64" -x cu  -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include"  -G   --keep-dir x64\Debug -maxrregcount=0  --machine 64 --compile   -g   -DWIN32 -DWIN64 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od  /FS /Zi /RTC1 /MDd " -o x64\Debug\functional.cu.obj "U:\mosaic_vs\mosaic_acq18hx_cuda10\mosaic_acq18hx_cuda10\functional.cu" -clean 
+  functional.cu
+  
+  U:\mosaic_vs\mosaic_acq18hx_cuda10\mosaic_acq18hx_cuda10>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\bin\nvcc.exe" -ccbin "C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\VC\Tools\MSVC\14.13.26128\bin\HostX86\x64" -x cu  -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include"  -G   --keep-dir x64\Debug -maxrregcount=0  --machine 64 --compile   -g   -DWIN32 -DWIN64 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od  /FS /Zi /RTC1 /MDd " -o x64\Debug\kernel.cu.obj "U:\mosaic_vs\mosaic_acq18hx_cuda10\mosaic_acq18hx_cuda10\kernel.cu" -clean 
+  kernel.cu
+  
+  U:\mosaic_vs\mosaic_acq18hx_cuda10\mosaic_acq18hx_cuda10>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\bin\nvcc.exe" -ccbin "C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\VC\Tools\MSVC\14.13.26128\bin\HostX86\x64" -x cu  -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include"  -G   --keep-dir x64\Debug -maxrregcount=0  --machine 64 --compile   -g   -DWIN32 -DWIN64 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od  /FS /Zi /RTC1 /MDd " -o x64\Debug\main.cu.obj "U:\mosaic_vs\mosaic_acq18hx_cuda10\mosaic_acq18hx_cuda10\main.cu" -clean 
+  main.cu
+  Compiling CUDA source file main.cu...
+  Compiling CUDA source file functional.cu...
+  Compiling CUDA source file kernel.cu...
+  
+  U:\mosaic_vs\mosaic_acq18hx_cuda10\mosaic_acq18hx_cuda10>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\bin\nvcc.exe" -gencode=arch=compute_35,code=\"sm_35,compute_35\" --use-local-env -ccbin "C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\VC\Tools\MSVC\14.13.26128\bin\HostX86\x64" -x cu  -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include"  -G   --keep-dir x64\Debug -maxrregcount=0  --machine 64 --compile -cudart static  -g   -DWIN32 -DWIN64 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /Fdx64\Debug\vc141.pdb /FS /Zi /RTC1 /MDd " -o x64\Debug\main.cu.obj "U:\mosaic_vs\mosaic_acq18hx_cuda10\mosaic_acq18hx_cuda10\main.cu" 
+  
+  U:\mosaic_vs\mosaic_acq18hx_cuda10\mosaic_acq18hx_cuda10>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\bin\nvcc.exe" -gencode=arch=compute_35,code=\"sm_35,compute_35\" --use-local-env -ccbin "C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\VC\Tools\MSVC\14.13.26128\bin\HostX86\x64" -x cu  -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include"  -G   --keep-dir x64\Debug -maxrregcount=0  --machine 64 --compile -cudart static  -g   -DWIN32 -DWIN64 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /Fdx64\Debug\vc141.pdb /FS /Zi /RTC1 /MDd " -o x64\Debug\functional.cu.obj "U:\mosaic_vs\mosaic_acq18hx_cuda10\mosaic_acq18hx_cuda10\functional.cu" 
+  
+  U:\mosaic_vs\mosaic_acq18hx_cuda10\mosaic_acq18hx_cuda10>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\bin\nvcc.exe" -gencode=arch=compute_35,code=\"sm_35,compute_35\" --use-local-env -ccbin "C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\VC\Tools\MSVC\14.13.26128\bin\HostX86\x64" -x cu  -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include"  -G   --keep-dir x64\Debug -maxrregcount=0  --machine 64 --compile -cudart static  -g   -DWIN32 -DWIN64 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /Fdx64\Debug\vc141.pdb /FS /Zi /RTC1 /MDd " -o x64\Debug\kernel.cu.obj "U:\mosaic_vs\mosaic_acq18hx_cuda10\mosaic_acq18hx_cuda10\kernel.cu" 
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/main.cu(39): warning : conversion from a string literal to "char *" is deprecated
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/main.cu(56): warning : variable "dev_mos" was declared but never referenced
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/main.cu(105): warning : conversion from a string literal to "char *" is deprecated
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(48): warning : conversion from a string literal to "char *" is deprecated
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(55): warning : conversion from a string literal to "char *" is deprecated
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(60): warning : conversion from a string literal to "char *" is deprecated
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(62): warning : conversion from a string literal to "char *" is deprecated
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(64): warning : conversion from a string literal to "char *" is deprecated
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(74): warning : conversion from a string literal to "char *" is deprecated
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(77): warning : conversion from a string literal to "char *" is deprecated
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(86): warning : variable "i" was declared but never referenced
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(103): warning : conversion from a string literal to "char *" is deprecated
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(111): warning : conversion from a string literal to "char *" is deprecated
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(126): warning : conversion from pointer to smaller integer
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(126): warning : conversion from pointer to smaller integer
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(126): warning : conversion from pointer to smaller integer
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(128): warning : conversion from pointer to smaller integer
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(128): warning : conversion from pointer to smaller integer
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(128): warning : conversion from pointer to smaller integer
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(130): warning : conversion from pointer to smaller integer
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(130): warning : conversion from pointer to smaller integer
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(130): warning : conversion from pointer to smaller integer
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(48): warning : conversion from a string literal to "char *" is deprecated
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(55): warning : conversion from a string literal to "char *" is deprecated
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(60): warning : conversion from a string literal to "char *" is deprecated
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(62): warning : conversion from a string literal to "char *" is deprecated
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(64): warning : conversion from a string literal to "char *" is deprecated
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(74): warning : conversion from a string literal to "char *" is deprecated
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(77): warning : conversion from a string literal to "char *" is deprecated
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(103): warning : conversion from a string literal to "char *" is deprecated
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(111): warning : conversion from a string literal to "char *" is deprecated
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(126): warning : conversion from pointer to smaller integer
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(126): warning : conversion from pointer to smaller integer
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(126): warning : conversion from pointer to smaller integer
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(128): warning : conversion from pointer to smaller integer
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(128): warning : conversion from pointer to smaller integer
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(128): warning : conversion from pointer to smaller integer
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(130): warning : conversion from pointer to smaller integer
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/main.cu(39): warning : conversion from a string literal to "char *" is deprecated
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(130): warning : conversion from pointer to smaller integer
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(130): warning : conversion from pointer to smaller integer
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/main.cu(105): warning : conversion from a string literal to "char *" is deprecated
+  main.cu
+  functional.cu
+  kernel.cu
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/main.cu(56): warning C4101: 'dev_mos': unreferenced local variable
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(126): warning C4311: 'type cast': pointer truncation from 'unsigned char *' to 'int'
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(126): warning C4302: 'type cast': truncation from 'unsigned char *' to 'int'
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(128): warning C4311: 'type cast': pointer truncation from 'unsigned char *' to 'int'
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(128): warning C4302: 'type cast': truncation from 'unsigned char *' to 'int'
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(130): warning C4311: 'type cast': pointer truncation from 'unsigned char *' to 'int'
+U:/mosaic_vs/mosaic_acq18hx_cuda10/mosaic_acq18hx_cuda10/functional.cu(130): warning C4302: 'type cast': truncation from 'unsigned char *' to 'int'
+     Creating library U:\mosaic_vs\mosaic_acq18hx_cuda10\x64\Debug\mosaic_acq18hx_cuda10.lib and object U:\mosaic_vs\mosaic_acq18hx_cuda10\x64\Debug\mosaic_acq18hx_cuda10.exp
+  mosaic_acq18hx_cuda10.vcxproj -> U:\mosaic_vs\mosaic_acq18hx_cuda10\x64\Debug\mosaic_acq18hx_cuda10.exe
