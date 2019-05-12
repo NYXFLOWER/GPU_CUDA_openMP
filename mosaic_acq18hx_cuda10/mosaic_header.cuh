@@ -11,6 +11,11 @@
 #include <sys/types.h>
 #include <time.h>
 #include <omp.h>
+#include <string.h>
+
+#include <cuda.h>
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
 
 /** *********** Type Define *********** **/
 typedef enum PPM_TYPE {
@@ -37,19 +42,35 @@ typedef struct Mosaic {
 	unsigned int pixcel_num;
 } Mosaic;
 
+typedef int(*Func)(int, int, Img *, Mosaic*);
+typedef void(*Process)(Img *, Mosaic *, int *, Func, int, int *);
 
 /** *********** Utility Functions *********** **/
 void error(char *message);
 int is_exp_of_two(unsigned int x);
+void print_help();
+int process_command_line(int argc, char *argv[]);
 
 
 /** *********** Pre-Process Data *********** **/
 void read_ppm(const char * img_path, Img * image);
 void write_ppm_binary(Img * img_path, char * file_name);
+void write_ppm_text(Img * image, char * file_name);
 
 void compute_mosaic_info(unsigned int cell_size, Img * image, Mosaic * mosic);
 
 
 /** *********** Implementation *********** **/
+void run_gpu(Img * image, Mosaic * mos, unsigned long long int * ave);
+void run_gpu2(Img * image, Mosaic * mos, unsigned long long int * ave);
+
+void run_cpu(Img * image, Mosaic * mos, Process ppp);
+
+// cpu version
+void process_mosaic_section_cpu(Img * image, Mosaic * mos, int limits[3], Func fff, int pixcel_num, int * total);
+
+// gpu version
+void process_mosaic_section_openmp2(Img * image, Mosaic * mos, int limits[3], Func fff, int pixcel_num, int * total);	// for inner loop
+
 
 #endif /* PPM_H */
